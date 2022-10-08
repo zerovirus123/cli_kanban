@@ -40,8 +40,8 @@ func (t Task) Description() string {
 /* MAIN MODEL */
 
 type Model struct {
-	list list.Model
-	err  error // display error to user at some point
+	lists list.Model
+	err   error // display error to user at some point
 }
 
 func New() *Model {
@@ -49,11 +49,11 @@ func New() *Model {
 }
 
 // TODO: call this on tea.WindowSizeMsg
-// on startup, grabs the size of the terminal window adjust accordingly
-func (m *Model) initList(width, height int) {
-	m.list = list.New([]list.Item{}, list.NewDefaultDelegate(), width, height)
-	m.list.Title = "To Do"
-	m.list.SetItems([]list.Item{
+// on startup, grabs the size of the terminal window and adjust the list accordingly
+func (m *Model) initLists(width, height int) {
+	m.lists = list.New([]list.Item{}, list.NewDefaultDelegate(), width, height)
+	m.lists.Title = "To Do"
+	m.lists.SetItems([]list.Item{
 		Task{status: todo, title: "buy milk", description: "strawberry milk"},
 		Task{status: todo, title: "eat sushi", description: "negitoro roll, miso soup, rice"},
 		Task{status: todo, title: "fold laundry", description: "or wear wrinkly t shirts"},
@@ -69,16 +69,16 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg: // terminal dimensions on program startup
-		m.initList(msg.Width, msg.Height)
+		m.initLists(msg.Width, msg.Height)
 	}
 
 	var cmd tea.Cmd
-	m.list, cmd = m.list.Update(msg) //update the list
+	m.lists, cmd = m.lists.Update(msg) //update the list
 	return m, cmd
 }
 
 func (m Model) View() string {
-	return m.list.View()
+	return m.lists.View()
 }
 
 func main() {
