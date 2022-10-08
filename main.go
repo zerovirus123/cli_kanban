@@ -133,10 +133,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c", "q":
 			m.quitting = true
 			return m, tea.Quit
-		case "left", "h":
+		case "left", "a":
 			m.Prev()
 
-		case "right", "l":
+		case "right", "d":
 			m.Next()
 		}
 	}
