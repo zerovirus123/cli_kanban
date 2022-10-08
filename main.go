@@ -19,6 +19,21 @@ const ( //indices to determine which list is focused
 	done
 )
 
+/* STYLING  */
+var (
+	columnStyle = lipgloss.NewStyle().
+			Padding(1, 2).
+			Border(lipgloss.HiddenBorder())
+
+	focusedStyle = lipgloss.NewStyle(). // styling for the focused column
+			Padding(1, 2).
+			Border(lipgloss.RoundedBorder()).
+			BorderForeground(lipgloss.Color("62"))
+
+	helpStyle = lipgloss.NewStyle(). // styling for the help text on the bottom
+			Foreground(lipgloss.Color("241"))
+)
+
 /* CUSTOM ITEM */
 
 type Task struct { // implementing the list.item inteface
@@ -105,16 +120,19 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m Model) View() string {
 
 	if m.loaded {
+		todoView := m.lists[todo].View()
+		inProgView := m.lists[inProgress].View()
+		doneView := m.lists[done].View()
+
 		return lipgloss.JoinHorizontal( // style definitions for nice terminal layouts
 			lipgloss.Left,
-			m.lists[todo].View(),
-			m.lists[inProgress].View(),
-			m.lists[done].View(),
+			todoView,
+			inProgView,
+			doneView,
 		)
 	} else {
 		return "loading..."
 	}
-
 }
 
 func main() {
