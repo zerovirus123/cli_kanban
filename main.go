@@ -90,7 +90,7 @@ func (m *Model) Prev() {
 // TODO: call this on tea.WindowSizeMsg
 // on startup, grabs the size of the terminal window and adjust the list accordingly
 func (m *Model) initLists(width, height int) {
-	defaultList := list.New([]list.Item{}, list.NewDefaultDelegate(), width/divisor, height-divisor/2)
+	defaultList := list.New([]list.Item{}, list.NewDefaultDelegate(), width/divisor, height/2)
 	defaultList.SetShowHelp(false)
 	m.lists = []list.Model{defaultList, defaultList, defaultList}
 
@@ -127,6 +127,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if !m.loaded { // if list is not loaded, initialize it
 			columnStyle.Width(msg.Width / divisor)
 			focusedStyle.Width(msg.Width / divisor)
+			columnStyle.Height(msg.Height - divisor)
+			focusedStyle.Height(msg.Height - divisor)
 			m.initLists(msg.Width, msg.Height)
 			m.loaded = true
 		}
