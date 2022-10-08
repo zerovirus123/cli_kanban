@@ -57,6 +57,7 @@ func New() *Model {
 // on startup, grabs the size of the terminal window and adjust the list accordingly
 func (m *Model) initLists(width, height int) {
 	defaultList := list.New([]list.Item{}, list.NewDefaultDelegate(), width/divisor, height)
+	defaultList.SetShowHelp(false)
 	m.lists = []list.Model{defaultList, defaultList, defaultList}
 
 	// Init To Dos
