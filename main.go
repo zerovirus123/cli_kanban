@@ -125,6 +125,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg: // terminal dimensions on program startup
 		if !m.loaded { // if list is not loaded, initialize it
+			columnStyle.Width(msg.Width / divisor)
+			focusedStyle.Width(msg.Width / divisor)
 			m.initLists(msg.Width, msg.Height)
 			m.loaded = true
 		}
