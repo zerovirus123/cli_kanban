@@ -52,8 +52,8 @@ type Task struct { // implementing the list.item inteface
 	description string
 }
 
-func NewTask(status status, title, description string) *Task {
-	return &Task{title: title, description: description, status: status}
+func NewTask(status status, title, description string) Task {
+	return Task{title: title, description: description, status: status}
 }
 
 func (t *Task) Next() {
@@ -176,6 +176,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, m.MoveToNext
 		case "n": // saves the state of the current models to an array of models
 			models[model] = m
+			models[form] = NewForm(m.focused)
 			return models[form].Update(nil)
 		}
 	case Task:
