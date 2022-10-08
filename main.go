@@ -182,6 +182,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			models[model] = m
 			models[form] = NewForm(m.focused)
 			return models[form].Update(nil)
+		case "x": //deletes an entry
+			index := m.lists[m.focused].Index()
+			m.lists[m.focused].RemoveItem(index)
 		}
 	case Task:
 		task := msg
