@@ -235,8 +235,8 @@ type Form struct {
 }
 
 func (m Form) CreateTask() tea.Msg {
-	// TODO: create a new Task
-	return NewTask(m.focused, m.title.Value(), m.description.Value())
+	task := NewTask(m.focused, m.title.Value(), m.description.Value())
+	return task
 }
 
 func (m Form) Init() tea.Cmd {
