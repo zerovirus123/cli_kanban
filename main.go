@@ -6,9 +6,12 @@ import (
 
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
 
 type status int
+
+const divisor = 4 // divide the total width of the viewport by 4
 
 const ( //indices to determine which list is focused
 	todo status = iota
@@ -40,8 +43,10 @@ func (t Task) Description() string {
 /* MAIN MODEL */
 
 type Model struct {
-	lists list.Model
-	err   error // display error to user at some point
+	loaded  bool   // wait before anything is displayed, to make sure that the lists have been initialized
+	focused status // holds the list that is currently in focus
+	lists   []list.Model
+	err     error // display error to user at some point
 }
 
 func New() *Model {
@@ -51,12 +56,27 @@ func New() *Model {
 // TODO: call this on tea.WindowSizeMsg
 // on startup, grabs the size of the terminal window and adjust the list accordingly
 func (m *Model) initLists(width, height int) {
-	m.lists = list.New([]list.Item{}, list.NewDefaultDelegate(), width, height)
-	m.lists.Title = "To Do"
-	m.lists.SetItems([]list.Item{
+	defaultList := list.New([]list.Item{}, list.NewDefaultDelegate(), width/divisor, height)
+	m.lists = []list.Model{defaultList, defaultList, defaultList}
+
+	// Init To Dos
+	m.lists[todo].Title = "To Do"
+	m.lists[todo].SetItems([]list.Item{
 		Task{status: todo, title: "buy milk", description: "strawberry milk"},
 		Task{status: todo, title: "eat sushi", description: "negitoro roll, miso soup, rice"},
 		Task{status: todo, title: "fold laundry", description: "or wear wrinkly t shirts"},
+	})
+
+	// Init in progress
+	m.lists[inProgress].Title = "In Progress"
+	m.lists[inProgress].SetItems([]list.Item{
+		Task{status: todo, title: "write code", description: "don't worry, it's Go"},
+	})
+
+	// Init done
+	m.lists[done].Title = "Done"
+	m.lists[done].SetItems([]list.Item{
+		Task{status: todo, title: "stay cool", description: "as a cucumber"},
 	})
 }
 
@@ -69,16 +89,31 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg: // terminal dimensions on program startup
-		m.initLists(msg.Width, msg.Height)
+		if !m.loaded { // if list is not loaded, initialize it
+			m.initLists(msg.Width, msg.Height)
+			m.loaded = true
+		}
+
 	}
 
 	var cmd tea.Cmd
-	m.lists, cmd = m.lists.Update(msg) //update the list
+	m.lists[m.focused], cmd = m.lists[m.focused].Update(msg) //update the list
 	return m, cmd
 }
 
 func (m Model) View() string {
-	return m.lists.View()
+
+	if m.loaded {
+		return lipgloss.JoinHorizontal( // style definitions for nice terminal layouts
+			lipgloss.Left,
+			m.lists[todo].View(),
+			m.lists[inProgress].View(),
+			m.lists[done].View(),
+		)
+	} else {
+		return "loading..."
+	}
+
 }
 
 func main() {
