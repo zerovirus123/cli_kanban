@@ -16,3 +16,5 @@ Use the up/down buttons to move between tasks.
 Use the `n` button to open a task form.
 
 Use the `x` button to delete the focused task.
+
+Press `q` to quit the kanban board.
