@@ -7,20 +7,26 @@ import (
 	"os"
 )
 
+type Todo struct {
+	Title       string `json:"title"`
+	Description string `json:"description"`
+}
+
+type InProgress struct {
+	Title       string `json:"title"`
+	Description string `json:"description"`
+}
+
+type Done struct {
+	Title       string `json:"title"`
+	Description string `json:"description"`
+}
+
 // JSON-to-Go is amazeballs https://mholt.github.io/json-to-go/
 type Columns struct {
-	Todo []struct {
-		Title       string `json:"title"`
-		Description string `json:"description"`
-	} `json:"todo"`
-	InProgress []struct {
-		Title       string `json:"title"`
-		Description string `json:"description"`
-	} `json:"inProgress"`
-	Done []struct {
-		Title       string `json:"title"`
-		Description string `json:"description"`
-	} `json:"done"`
+	Todo       []Todo       `json:"todo"`
+	InProgress []InProgress `json:"inProgress"`
+	Done       []Done       `json:"done"`
 }
 
 func ReadFromStorage() Columns {
