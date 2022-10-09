@@ -7,8 +7,12 @@ BubbleTea is a framework for building terminal apps.
 
 # Usage
 
-Type `go run main.go`
+Type `go run main.go`.
+
 Use the `left/right` or `A/D` keys to move between lists. 
+
 Use the up/down buttons to move between tasks.
+
 Use the `n` button to open a task form.
+
 Use the `x` button to delete the focused task.
