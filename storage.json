@@ -1,0 +1,28 @@
+{
+    "todo": [
+    {
+        "title": "buy milk",
+        "description": "or wear wrinkly t shirts"
+    },
+    {
+        "title": "eat sushi",
+        "description": "negitoro roll, miso soup, rice"
+    },
+    {
+        "title": "fold laundry",
+        "description": "or wear wrinkly t shirts"
+    }
+    ],
+    "inProgress": [
+    {
+        "title": "buy milk",
+        "description": "or wear wrinkly t shirts"
+    }
+    ],
+    "done": [
+    {
+        "title": "stay cool",
+        "description": "as a cucumber"
+    }
+    ]
+}

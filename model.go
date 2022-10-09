@@ -61,25 +61,36 @@ func (m *Model) initLists(width, height int) {
 	defaultList.SetShowHelp(false)
 	m.lists = []list.Model{defaultList, defaultList, defaultList}
 
+	columns := ReadFromStorage()
+
 	// Init To Dos
 	m.lists[todo].Title = "To Do"
-	m.lists[todo].SetItems([]list.Item{
-		Task{status: todo, title: "buy milk", description: "strawberry milk"},
-		Task{status: todo, title: "eat sushi", description: "negitoro roll, miso soup, rice"},
-		Task{status: todo, title: "fold laundry", description: "or wear wrinkly t shirts"},
-	})
-
-	// Init in progress
 	m.lists[inProgress].Title = "In Progress"
-	m.lists[inProgress].SetItems([]list.Item{
-		Task{status: todo, title: "write code", description: "don't worry, it's Go"},
-	})
-
-	// Init done
 	m.lists[done].Title = "Done"
-	m.lists[done].SetItems([]list.Item{
-		Task{status: todo, title: "stay cool", description: "as a cucumber"},
-	})
+
+	todoItems := []list.Item{}
+	inProgressItems := []list.Item{}
+	doneItems := []list.Item{}
+
+	for _, value := range columns.Todo {
+		task := Task{status: todo, title: value.Title, description: value.Description}
+		todoItems = append(todoItems, task)
+	}
+
+	for _, value := range columns.InProgress {
+		task := Task{status: inProgress, title: value.Title, description: value.Description}
+		inProgressItems = append(inProgressItems, task)
+	}
+
+	for _, value := range columns.Done {
+		task := Task{status: done, title: value.Title, description: value.Description}
+		doneItems = append(doneItems, task)
+	}
+
+	m.lists[todo].SetItems(todoItems)
+	m.lists[inProgress].SetItems(inProgressItems)
+	m.lists[done].SetItems(doneItems)
+
 }
 
 func (m Model) Init() tea.Cmd {
