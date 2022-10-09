@@ -51,3 +51,37 @@ func ReadFromStorage() Columns {
 
 	return columns
 }
+
+func WriteToStorage(m Model) {
+
+	var columns Columns
+
+	for _, element := range m.lists[todo].Items() {
+		columns.Todo = append(columns.Todo, Todo{element.(Task).title, element.(Task).description})
+	}
+
+	for _, element := range m.lists[inProgress].Items() {
+		columns.InProgress = append(columns.InProgress, InProgress{element.(Task).title, element.(Task).description})
+	}
+
+	for _, element := range m.lists[done].Items() {
+		columns.Done = append(columns.Done, Done{element.(Task).title, element.(Task).description})
+	}
+
+	storageFile := "storage.json"
+
+	if _, err := os.Stat(storageFile); err == nil {
+		e := os.Remove(storageFile)
+		if e != nil {
+			fmt.Println(e)
+		}
+	}
+
+	_, e := os.Create(storageFile)
+	if e != nil {
+		fmt.Println(e)
+	}
+
+	jsonString, _ := json.MarshalIndent(columns, "", " ")
+	_ = ioutil.WriteFile(storageFile, jsonString, 0644)
+}

@@ -113,6 +113,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "ctrl+c", "q":
 			m.quitting = true
+			WriteToStorage(m)
 			return m, tea.Quit
 		case "left", "a":
 			m.Prev()
