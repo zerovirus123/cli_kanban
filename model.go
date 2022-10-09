@@ -16,7 +16,6 @@ type Model struct {
 	loaded   bool   // wait before anything is displayed, to make sure that the lists have been initialized
 	focused  status // holds the list that is currently in focus
 	lists    []list.Model
-	err      error // display error to user at some point
 }
 
 func New() *Model {
