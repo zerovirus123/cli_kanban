@@ -5,13 +5,18 @@
 A simple command line interface based Kanban board built using BubbleTea.
 BubbleTea is a framework for building terminal apps. 
 
+Tasks can be moved to the next column. The app also supports task addition and deletion.
+Persistence is achieved with the `storage.json` file.
+
 # Usage
 
-Type `go run main.go`.
+To run the program, type `go run .`.
 
 Use the `left/right` or `A/D` keys to move between lists. 
 
 Use the up/down buttons to move between tasks.
+
+Press `Enter` to move a selected task to the next column.
 
 Use the `n` button to open a task form.
 
