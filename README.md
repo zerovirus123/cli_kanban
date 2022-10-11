@@ -10,6 +10,8 @@ Persistence is achieved with the `storage.json` file.
 
 # Usage
 
+Make sure that Go is installed on your machine. Guides for installing Go for different platforms can be found [here](https://go.dev/doc/install). 
+
 To run the program, type `go run .`.
 
 Use the `left/right` or `A/D` keys to move between lists. 
