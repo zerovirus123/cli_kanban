@@ -1,18 +1,20 @@
 package main
 
+import "cli_kanban/typedef"
+
 type Task struct { // implementing the list.item inteface
-	status      status
+	status      typedef.Status
 	title       string
 	description string
 }
 
-func NewTask(status status, title, description string) Task {
+func NewTask(status typedef.Status, title, description string) Task {
 	return Task{title: title, description: description, status: status}
 }
 
 func (t *Task) Next() {
-	if t.status == done {
-		t.status = todo
+	if t.status == typedef.Done {
+		t.status = typedef.Todo
 	} else {
 		t.status++
 	}

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"cli_kanban/typedef"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -56,15 +57,15 @@ func WriteToStorage(m Model) {
 
 	var columns Columns
 
-	for _, element := range m.lists[todo].Items() {
+	for _, element := range m.lists[typedef.Todo].Items() {
 		columns.Todo = append(columns.Todo, Todo{element.(Task).title, element.(Task).description})
 	}
 
-	for _, element := range m.lists[inProgress].Items() {
+	for _, element := range m.lists[typedef.InProgress].Items() {
 		columns.InProgress = append(columns.InProgress, InProgress{element.(Task).title, element.(Task).description})
 	}
 
-	for _, element := range m.lists[done].Items() {
+	for _, element := range m.lists[typedef.Done].Items() {
 		columns.Done = append(columns.Done, Done{element.(Task).title, element.(Task).description})
 	}
 

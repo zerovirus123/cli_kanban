@@ -1,6 +1,8 @@
 package main
 
 import (
+	"cli_kanban/typedef"
+
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -13,8 +15,8 @@ var models []tea.Model
 
 type Model struct {
 	quitting bool
-	loaded   bool   // wait before anything is displayed, to make sure that the lists have been initialized
-	focused  status // holds the list that is currently in focus
+	loaded   bool           // wait before anything is displayed, to make sure that the lists have been initialized
+	focused  typedef.Status // holds the list that is currently in focus
 	lists    []list.Model
 }
 
@@ -37,8 +39,8 @@ func (m *Model) MoveToNext() tea.Msg {
 
 // TODO: Go to next list
 func (m *Model) Next() {
-	if m.focused == done {
-		m.focused = todo
+	if m.focused == typedef.Done {
+		m.focused = typedef.Todo
 	} else {
 		m.focused++
 	}
@@ -46,8 +48,8 @@ func (m *Model) Next() {
 
 // TODO: go to previous list
 func (m *Model) Prev() {
-	if m.focused == todo {
-		m.focused = done
+	if m.focused == typedef.Todo {
+		m.focused = typedef.Done
 	} else {
 		m.focused--
 	}
@@ -56,39 +58,39 @@ func (m *Model) Prev() {
 // TODO: call this on tea.WindowSizeMsg
 // on startup, grabs the size of the terminal window and adjust the list accordingly
 func (m *Model) initLists(width, height int) {
-	defaultList := list.New([]list.Item{}, list.NewDefaultDelegate(), width/divisor, height/2)
+	defaultList := list.New([]list.Item{}, list.NewDefaultDelegate(), width/typedef.Divisor, height/2)
 	defaultList.SetShowHelp(false)
 	m.lists = []list.Model{defaultList, defaultList, defaultList}
 
 	columns := ReadFromStorage()
 
 	// Init To Dos
-	m.lists[todo].Title = "To Do"
-	m.lists[inProgress].Title = "In Progress"
-	m.lists[done].Title = "Done"
+	m.lists[typedef.Todo].Title = "To Do"
+	m.lists[typedef.InProgress].Title = "In Progress"
+	m.lists[typedef.Done].Title = "Done"
 
 	todoItems := []list.Item{}
 	inProgressItems := []list.Item{}
 	doneItems := []list.Item{}
 
 	for _, value := range columns.Todo {
-		task := Task{status: todo, title: value.Title, description: value.Description}
+		task := Task{status: typedef.Todo, title: value.Title, description: value.Description}
 		todoItems = append(todoItems, task)
 	}
 
 	for _, value := range columns.InProgress {
-		task := Task{status: inProgress, title: value.Title, description: value.Description}
+		task := Task{status: typedef.InProgress, title: value.Title, description: value.Description}
 		inProgressItems = append(inProgressItems, task)
 	}
 
 	for _, value := range columns.Done {
-		task := Task{status: done, title: value.Title, description: value.Description}
+		task := Task{status: typedef.Done, title: value.Title, description: value.Description}
 		doneItems = append(doneItems, task)
 	}
 
-	m.lists[todo].SetItems(todoItems)
-	m.lists[inProgress].SetItems(inProgressItems)
-	m.lists[done].SetItems(doneItems)
+	m.lists[typedef.Todo].SetItems(todoItems)
+	m.lists[typedef.InProgress].SetItems(inProgressItems)
+	m.lists[typedef.Done].SetItems(doneItems)
 
 }
 
@@ -102,10 +104,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg: // terminal dimensions on program startup
 		if !m.loaded { // if list is not loaded, initialize it
-			columnStyle.Width(msg.Width / divisor)
-			focusedStyle.Width(msg.Width / divisor)
-			columnStyle.Height(msg.Height - divisor)
-			focusedStyle.Height(msg.Height - divisor)
+			columnStyle.Width(msg.Width / typedef.Divisor)
+			focusedStyle.Width(msg.Width / typedef.Divisor)
+			columnStyle.Height(msg.Height - typedef.Divisor)
+			focusedStyle.Height(msg.Height - typedef.Divisor)
 			m.initLists(msg.Width, msg.Height)
 			m.loaded = true
 		}
@@ -122,9 +124,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "enter":
 			return m, m.MoveToNext
 		case "n": // saves the state of the current models to an array of models
-			models[model] = m
-			models[form] = NewForm(m.focused)
-			return models[form].Update(nil)
+			models[typedef.Model] = m
+			models[typedef.Form] = NewForm(m.focused)
+			return models[typedef.Form].Update(nil)
 		case "x": //deletes an entry
 			index := m.lists[m.focused].Index()
 			m.lists[m.focused].RemoveItem(index)
@@ -145,20 +147,20 @@ func (m Model) View() string {
 	}
 
 	if m.loaded {
-		todoView := m.lists[todo].View()
-		inProgView := m.lists[inProgress].View()
-		doneView := m.lists[done].View()
+		todoView := m.lists[typedef.Todo].View()
+		inProgView := m.lists[typedef.InProgress].View()
+		doneView := m.lists[typedef.Done].View()
 
 		switch m.focused {
 
-		case inProgress:
+		case typedef.InProgress:
 			return lipgloss.JoinHorizontal(
 				lipgloss.Left,
 				columnStyle.Render(todoView),
 				focusedStyle.Render(inProgView),
 				columnStyle.Render(doneView),
 			)
-		case done:
+		case typedef.Done:
 			return lipgloss.JoinHorizontal(
 				lipgloss.Left,
 				columnStyle.Render(todoView),

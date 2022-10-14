@@ -1,6 +1,8 @@
 package main
 
 import (
+	"cli_kanban/typedef"
+
 	"github.com/charmbracelet/bubbles/textarea"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -9,7 +11,7 @@ import (
 
 /* FORM MODEL */
 type Form struct {
-	focused     status
+	focused     typedef.Status
 	title       textinput.Model
 	description textarea.Model
 }
@@ -36,8 +38,8 @@ func (m Form) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.description.Focus()
 				return m, textarea.Blink
 			} else {
-				models[form] = m
-				return models[model], m.CreateTask
+				models[typedef.Form] = m
+				return models[typedef.Model], m.CreateTask
 			}
 		}
 	}
@@ -51,7 +53,7 @@ func (m Form) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 }
 
-func NewForm(focused status) *Form {
+func NewForm(focused typedef.Status) *Form {
 	form := &Form{focused: focused}
 	form.title = textinput.New()
 	form.title.Focus()
