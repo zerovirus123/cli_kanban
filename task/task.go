@@ -1,6 +1,8 @@
-package main
+package task
 
-import "cli_kanban/typedef"
+import (
+	"cli_kanban/typedef"
+)
 
 type Task struct { // implementing the list.item inteface
 	status      typedef.Status
@@ -8,8 +10,8 @@ type Task struct { // implementing the list.item inteface
 	description string
 }
 
-func NewTask(status typedef.Status, title, description string) Task {
-	return Task{title: title, description: description, status: status}
+func NewTask(status typedef.Status, title string, description string) *Task {
+	return &Task{status: status, title: title, description: description}
 }
 
 func (t *Task) Next() {
@@ -25,10 +27,14 @@ func (t Task) FilterValue() string {
 	return t.title
 }
 
-func (t Task) Title() string {
+func (t Task) GetTitle() string {
 	return t.title
 }
 
-func (t Task) Description() string {
+func (t Task) GetDescription() string {
 	return t.description
+}
+
+func (t Task) GetStatus() typedef.Status {
+	return t.status
 }

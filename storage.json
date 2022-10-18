@@ -1,10 +1,6 @@
 {
  "todo": [
   {
-   "title": "buy milk",
-   "description": "or wear wrinkly t shirts"
-  },
-  {
    "title": "eat sushi",
    "description": "negitoro roll, miso soup, rice"
   },
@@ -20,6 +16,10 @@
   }
  ],
  "done": [
+  {
+   "title": "buy milk",
+   "description": "or wear wrinkly t shirts"
+  },
   {
    "title": "stay cool",
    "description": "as a cucumber"

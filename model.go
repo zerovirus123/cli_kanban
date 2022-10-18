@@ -1,6 +1,7 @@
 package main
 
 import (
+	"cli_kanban/task"
 	"cli_kanban/typedef"
 
 	"github.com/charmbracelet/bubbles/list"
@@ -28,10 +29,10 @@ func (m *Model) MoveToNext() tea.Msg {
 	selectedItem := m.lists[m.focused].SelectedItem()
 
 	if selectedItem != nil {
-		selectedTask := selectedItem.(Task)
-		m.lists[selectedTask.status].RemoveItem(m.lists[m.focused].Index())
+		selectedTask := selectedItem.(*task.Task)
+		m.lists[selectedTask.GetStatus()].RemoveItem(m.lists[m.focused].Index())
 		selectedTask.Next() // increment the selectedTask.status field
-		m.lists[selectedTask.status].InsertItem(len(m.lists[selectedTask.status].Items())-1, list.Item(selectedTask))
+		m.lists[selectedTask.GetStatus()].InsertItem(len(m.lists[selectedTask.GetStatus()].Items())-1, list.Item(selectedTask))
 	}
 
 	return nil
@@ -74,17 +75,17 @@ func (m *Model) initLists(width, height int) {
 	doneItems := []list.Item{}
 
 	for _, value := range columns.Todo {
-		task := Task{status: typedef.Todo, title: value.Title, description: value.Description}
+		task := task.NewTask(typedef.Todo, value.Title, value.Description)
 		todoItems = append(todoItems, task)
 	}
 
 	for _, value := range columns.InProgress {
-		task := Task{status: typedef.InProgress, title: value.Title, description: value.Description}
+		task := task.NewTask(typedef.InProgress, value.Title, value.Description)
 		inProgressItems = append(inProgressItems, task)
 	}
 
 	for _, value := range columns.Done {
-		task := Task{status: typedef.Done, title: value.Title, description: value.Description}
+		task := task.NewTask(typedef.Done, value.Title, value.Description)
 		doneItems = append(doneItems, task)
 	}
 
@@ -131,9 +132,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			index := m.lists[m.focused].Index()
 			m.lists[m.focused].RemoveItem(index)
 		}
-	case Task:
+	case task.Task:
 		task := msg
-		return m, m.lists[task.status].InsertItem(len(m.lists[task.status].Items()), task)
+		return m, m.lists[task.GetStatus()].InsertItem(len(m.lists[task.GetStatus()].Items()), task)
 	}
 
 	var cmd tea.Cmd

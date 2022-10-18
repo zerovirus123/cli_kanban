@@ -1,6 +1,7 @@
 package main
 
 import (
+	"cli_kanban/task"
 	"cli_kanban/typedef"
 
 	"github.com/charmbracelet/bubbles/textarea"
@@ -17,7 +18,7 @@ type Form struct {
 }
 
 func (m Form) CreateTask() tea.Msg {
-	task := NewTask(m.focused, m.title.Value(), m.description.Value())
+	task := task.NewTask(m.focused, m.title.Value(), m.description.Value())
 	return task
 }
 
