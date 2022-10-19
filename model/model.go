@@ -1,6 +1,8 @@
-package main
+package model
 
 import (
+	"cli_kanban/datastore"
+	"cli_kanban/form"
 	"cli_kanban/styling"
 	"cli_kanban/task"
 	"cli_kanban/typedef"
@@ -10,66 +12,59 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-/* MODEL MANAGEMENT */
-var models []tea.Model
+// /* MODEL MANAGEMENT */
+// var Models []tea.Model
 
-/* MAIN MODEL */
+type ModelHandler typedef.Model
 
-type Model struct {
-	quitting bool
-	loaded   bool           // wait before anything is displayed, to make sure that the lists have been initialized
-	focused  typedef.Status // holds the list that is currently in focus
-	lists    []list.Model
+func New() *ModelHandler {
+	return &ModelHandler{}
 }
 
-func New() *Model {
-	return &Model{}
-}
-
-func (m *Model) MoveToNext() tea.Msg {
-	selectedItem := m.lists[m.focused].SelectedItem()
+func (m *ModelHandler) MoveToNext() tea.Msg {
+	selectedItem := m.Lists[m.Focused].SelectedItem()
 
 	if selectedItem != nil {
 		selectedTask := selectedItem.(*task.Task)
-		m.lists[selectedTask.Status()].RemoveItem(m.lists[m.focused].Index())
+		m.Lists[selectedTask.Status()].RemoveItem(m.Lists[m.Focused].Index())
 		selectedTask.Next() // increment the selectedTask.status field
-		m.lists[selectedTask.Status()].InsertItem(len(m.lists[selectedTask.Status()].Items())-1, list.Item(selectedTask))
+		m.Lists[selectedTask.Status()].InsertItem(len(m.Lists[selectedTask.Status()].Items())-1, list.Item(selectedTask))
 	}
 
 	return nil
 }
 
 // TODO: Go to next list
-func (m *Model) Next() {
-	if m.focused == typedef.Done {
-		m.focused = typedef.Todo
+func (m *ModelHandler) Next() {
+	if m.Focused == typedef.Done {
+		m.Focused = typedef.Todo
 	} else {
-		m.focused++
+		m.Focused++
 	}
 }
 
 // TODO: go to previous list
-func (m *Model) Prev() {
-	if m.focused == typedef.Todo {
-		m.focused = typedef.Done
+func (m *ModelHandler) Prev() {
+	if m.Focused == typedef.Todo {
+		m.Focused = typedef.Done
 	} else {
-		m.focused--
+		m.Focused--
 	}
 }
 
 // TODO: call this on tea.WindowSizeMsg
 // on startup, grabs the size of the terminal window and adjust the list accordingly
-func (m *Model) initLists(width, height int) {
+func (m *ModelHandler) initLists(width, height int) {
 	defaultList := list.New([]list.Item{}, list.NewDefaultDelegate(), width/typedef.Divisor, height/2)
 	defaultList.SetShowHelp(false)
-	m.lists = []list.Model{defaultList, defaultList, defaultList}
+	m.Lists = []list.Model{defaultList, defaultList, defaultList}
 
-	columns := ReadFromStorage()
+	columns := datastore.ReadFromStorage()
 
 	// Init To Dos
-	m.lists[typedef.Todo].Title = "To Do"
-	m.lists[typedef.InProgress].Title = "In Progress"
-	m.lists[typedef.Done].Title = "Done"
+	m.Lists[typedef.Todo].Title = "To Do"
+	m.Lists[typedef.InProgress].Title = "In Progress"
+	m.Lists[typedef.Done].Title = "Done"
 
 	todoItems := []list.Item{}
 	inProgressItems := []list.Item{}
@@ -90,32 +85,32 @@ func (m *Model) initLists(width, height int) {
 		doneItems = append(doneItems, task)
 	}
 
-	m.lists[typedef.Todo].SetItems(todoItems)
-	m.lists[typedef.InProgress].SetItems(inProgressItems)
-	m.lists[typedef.Done].SetItems(doneItems)
+	m.Lists[typedef.Todo].SetItems(todoItems)
+	m.Lists[typedef.InProgress].SetItems(inProgressItems)
+	m.Lists[typedef.Done].SetItems(doneItems)
 }
 
-func (m Model) Init() tea.Cmd {
+func (m ModelHandler) Init() tea.Cmd {
 	return nil // no timer to startup when the program starts
 }
 
 // update the list (passing the interactions and keypresses, no logic involved)
-func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m ModelHandler) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg: // terminal dimensions on program startup
-		if !m.loaded { // if list is not loaded, initialize it
+		if !m.Loaded { // if list is not loaded, initialize it
 			styling.ColumnStyle.Width(msg.Width / typedef.Divisor)
 			styling.FocusedStyle.Width(msg.Width / typedef.Divisor)
 			styling.ColumnStyle.Height(msg.Height - typedef.Divisor)
 			styling.FocusedStyle.Height(msg.Height - typedef.Divisor)
 			m.initLists(msg.Width, msg.Height)
-			m.loaded = true
+			m.Loaded = true
 		}
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+c", "q":
-			m.quitting = true
-			WriteToStorage(m)
+			m.Quitting = true
+			datastore.WriteToStorage((typedef.Model)(m))
 			return m, tea.Quit
 		case "left", "a":
 			m.Prev()
@@ -124,34 +119,34 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "enter":
 			return m, m.MoveToNext
 		case "n": // saves the state of the current models to an array of models
-			models[typedef.ModelEnum] = m
-			models[typedef.FormEnum] = NewForm(m.focused)
-			return models[typedef.FormEnum].Update(nil)
+			typedef.Models[typedef.ModelEnum] = m
+			typedef.Models[typedef.FormEnum] = form.NewForm(m.Focused)
+			return typedef.Models[typedef.FormEnum].Update(nil)
 		case "x": // deletes an entry
-			index := m.lists[m.focused].Index()
-			m.lists[m.focused].RemoveItem(index)
+			index := m.Lists[m.Focused].Index()
+			m.Lists[m.Focused].RemoveItem(index)
 		}
 	case task.Task:
 		task := msg
-		return m, m.lists[task.Status()].InsertItem(len(m.lists[task.Status()].Items()), task)
+		return m, m.Lists[task.Status()].InsertItem(len(m.Lists[task.Status()].Items()), task)
 	}
 
 	var cmd tea.Cmd
-	m.lists[m.focused], cmd = m.lists[m.focused].Update(msg) // update the list
+	m.Lists[m.Focused], cmd = m.Lists[m.Focused].Update(msg) // update the list
 	return m, cmd
 }
 
-func (m Model) View() string {
-	if m.quitting {
+func (m ModelHandler) View() string {
+	if m.Quitting {
 		return ""
 	}
 
-	if m.loaded {
-		todoView := m.lists[typedef.Todo].View()
-		inProgView := m.lists[typedef.InProgress].View()
-		doneView := m.lists[typedef.Done].View()
+	if m.Loaded {
+		todoView := m.Lists[typedef.Todo].View()
+		inProgView := m.Lists[typedef.InProgress].View()
+		doneView := m.Lists[typedef.Done].View()
 
-		switch m.focused {
+		switch m.Focused {
 
 		case typedef.InProgress:
 			return lipgloss.JoinHorizontal(

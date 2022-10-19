@@ -1,4 +1,4 @@
-package main
+package datastore
 
 import (
 	"encoding/json"
@@ -35,8 +35,10 @@ type Columns struct {
 func ReadFromStorage() Columns {
 	var columns Columns
 
-	if _, err := os.Stat("storage.json"); err == nil {
-		jsonFile, err := os.Open("storage.json")
+	storageFile := "datastore/storage.json"
+
+	if _, err := os.Stat(storageFile); err == nil {
+		jsonFile, err := os.Open(storageFile)
 		if err != nil {
 			fmt.Println("JSON IO ERROR: " + err.Error())
 		}
@@ -53,22 +55,22 @@ func ReadFromStorage() Columns {
 	return columns
 }
 
-func WriteToStorage(m Model) {
+func WriteToStorage(m typedef.Model) {
 	var columns Columns
 
-	for _, element := range m.lists[typedef.Todo].Items() {
+	for _, element := range m.Lists[typedef.Todo].Items() {
 		columns.Todo = append(columns.Todo, Todo{element.(*task.Task).Title(), element.(*task.Task).Description()})
 	}
 
-	for _, element := range m.lists[typedef.InProgress].Items() {
+	for _, element := range m.Lists[typedef.InProgress].Items() {
 		columns.InProgress = append(columns.InProgress, InProgress{element.(*task.Task).Title(), element.(*task.Task).Description()})
 	}
 
-	for _, element := range m.lists[typedef.Done].Items() {
+	for _, element := range m.Lists[typedef.Done].Items() {
 		columns.Done = append(columns.Done, Done{element.(*task.Task).Title(), element.(*task.Task).Description()})
 	}
 
-	storageFile := "storage.json"
+	storageFile := "datastore/storage.json"
 
 	if _, err := os.Stat(storageFile); err == nil {
 		e := os.Remove(storageFile)

@@ -1,6 +1,8 @@
 package main // mandatory import
 
 import (
+	"cli_kanban/form"
+	"cli_kanban/model"
 	"cli_kanban/typedef"
 	"fmt"
 	"os"
@@ -9,8 +11,8 @@ import (
 )
 
 func main() {
-	models = []tea.Model{New(), NewForm(typedef.Todo)}
-	m := models[typedef.ModelEnum] // opens the main model as the default
+	typedef.Models = []tea.Model{model.New(), form.NewForm(typedef.Todo)}
+	m := typedef.Models[typedef.ModelEnum] // opens the main model as the default
 	p := tea.NewProgram(m)
 
 	if err := p.Start(); err != nil {
