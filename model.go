@@ -30,9 +30,9 @@ func (m *Model) MoveToNext() tea.Msg {
 
 	if selectedItem != nil {
 		selectedTask := selectedItem.(*task.Task)
-		m.lists[selectedTask.GetStatus()].RemoveItem(m.lists[m.focused].Index())
+		m.lists[selectedTask.Status()].RemoveItem(m.lists[m.focused].Index())
 		selectedTask.Next() // increment the selectedTask.status field
-		m.lists[selectedTask.GetStatus()].InsertItem(len(m.lists[selectedTask.GetStatus()].Items())-1, list.Item(selectedTask))
+		m.lists[selectedTask.Status()].InsertItem(len(m.lists[selectedTask.Status()].Items())-1, list.Item(selectedTask))
 	}
 
 	return nil
@@ -92,7 +92,6 @@ func (m *Model) initLists(width, height int) {
 	m.lists[typedef.Todo].SetItems(todoItems)
 	m.lists[typedef.InProgress].SetItems(inProgressItems)
 	m.lists[typedef.Done].SetItems(doneItems)
-
 }
 
 func (m Model) Init() tea.Cmd {
@@ -101,7 +100,6 @@ func (m Model) Init() tea.Cmd {
 
 // update the list (passing the interactions and keypresses, no logic involved)
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg: // terminal dimensions on program startup
 		if !m.loaded { // if list is not loaded, initialize it
@@ -128,17 +126,17 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			models[typedef.Model] = m
 			models[typedef.Form] = NewForm(m.focused)
 			return models[typedef.Form].Update(nil)
-		case "x": //deletes an entry
+		case "x": // deletes an entry
 			index := m.lists[m.focused].Index()
 			m.lists[m.focused].RemoveItem(index)
 		}
 	case task.Task:
 		task := msg
-		return m, m.lists[task.GetStatus()].InsertItem(len(m.lists[task.GetStatus()].Items()), task)
+		return m, m.lists[task.Status()].InsertItem(len(m.lists[task.Status()].Items()), task)
 	}
 
 	var cmd tea.Cmd
-	m.lists[m.focused], cmd = m.lists[m.focused].Update(msg) //update the list
+	m.lists[m.focused], cmd = m.lists[m.focused].Update(msg) // update the list
 	return m, cmd
 }
 

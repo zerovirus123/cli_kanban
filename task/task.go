@@ -27,14 +27,14 @@ func (t Task) FilterValue() string {
 	return t.title
 }
 
-func (t Task) GetTitle() string {
+func (t Task) Title() string {
 	return t.title
 }
 
-func (t Task) GetDescription() string {
+func (t Task) Description() string {
 	return t.description
 }
 
-func (t Task) GetStatus() typedef.Status {
+func (t Task) Status() typedef.Status {
 	return t.status
 }

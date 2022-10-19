@@ -1,12 +1,13 @@
 package main
 
 import (
-	"cli_kanban/task"
-	"cli_kanban/typedef"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
+
+	"cli_kanban/task"
+	"cli_kanban/typedef"
 )
 
 type Todo struct {
@@ -32,12 +33,10 @@ type Columns struct {
 }
 
 func ReadFromStorage() Columns {
-
 	var columns Columns
 
 	if _, err := os.Stat("storage.json"); err == nil {
 		jsonFile, err := os.Open("storage.json")
-
 		if err != nil {
 			fmt.Println("JSON IO ERROR: " + err.Error())
 		}
@@ -55,19 +54,18 @@ func ReadFromStorage() Columns {
 }
 
 func WriteToStorage(m Model) {
-
 	var columns Columns
 
 	for _, element := range m.lists[typedef.Todo].Items() {
-		columns.Todo = append(columns.Todo, Todo{element.(*task.Task).GetTitle(), element.(*task.Task).GetDescription()})
+		columns.Todo = append(columns.Todo, Todo{element.(*task.Task).Title(), element.(*task.Task).Description()})
 	}
 
 	for _, element := range m.lists[typedef.InProgress].Items() {
-		columns.InProgress = append(columns.InProgress, InProgress{element.(*task.Task).GetTitle(), element.(*task.Task).GetDescription()})
+		columns.InProgress = append(columns.InProgress, InProgress{element.(*task.Task).Title(), element.(*task.Task).Description()})
 	}
 
 	for _, element := range m.lists[typedef.Done].Items() {
-		columns.Done = append(columns.Done, Done{element.(*task.Task).GetTitle(), element.(*task.Task).GetDescription()})
+		columns.Done = append(columns.Done, Done{element.(*task.Task).Title(), element.(*task.Task).Description()})
 	}
 
 	storageFile := "storage.json"
