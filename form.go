@@ -39,8 +39,8 @@ func (m Form) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.description.Focus()
 				return m, textarea.Blink
 			} else {
-				models[typedef.Form] = m
-				return models[typedef.Model], m.CreateTask
+				models[typedef.FormEnum] = m
+				return models[typedef.ModelEnum], m.CreateTask
 			}
 		}
 	}

@@ -10,7 +10,7 @@ import (
 
 func main() {
 	models = []tea.Model{New(), NewForm(typedef.Todo)}
-	m := models[typedef.Model] // opens the main model as the default
+	m := models[typedef.ModelEnum] // opens the main model as the default
 	p := tea.NewProgram(m)
 
 	if err := p.Start(); err != nil {

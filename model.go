@@ -124,9 +124,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "enter":
 			return m, m.MoveToNext
 		case "n": // saves the state of the current models to an array of models
-			models[typedef.Model] = m
-			models[typedef.Form] = NewForm(m.focused)
-			return models[typedef.Form].Update(nil)
+			models[typedef.ModelEnum] = m
+			models[typedef.FormEnum] = NewForm(m.focused)
+			return models[typedef.FormEnum].Update(nil)
 		case "x": // deletes an entry
 			index := m.lists[m.focused].Index()
 			m.lists[m.focused].RemoveItem(index)

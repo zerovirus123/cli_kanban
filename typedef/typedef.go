@@ -11,6 +11,6 @@ const ( //indices to determine which list is focused
 )
 
 const (
-	Model Status = iota
-	Form
+	ModelEnum Status = iota
+	FormEnum
 )
