@@ -1,6 +1,7 @@
 package main
 
 import (
+	"cli_kanban/styling"
 	"cli_kanban/task"
 	"cli_kanban/typedef"
 
@@ -103,10 +104,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg: // terminal dimensions on program startup
 		if !m.loaded { // if list is not loaded, initialize it
-			columnStyle.Width(msg.Width / typedef.Divisor)
-			focusedStyle.Width(msg.Width / typedef.Divisor)
-			columnStyle.Height(msg.Height - typedef.Divisor)
-			focusedStyle.Height(msg.Height - typedef.Divisor)
+			styling.ColumnStyle.Width(msg.Width / typedef.Divisor)
+			styling.FocusedStyle.Width(msg.Width / typedef.Divisor)
+			styling.ColumnStyle.Height(msg.Height - typedef.Divisor)
+			styling.FocusedStyle.Height(msg.Height - typedef.Divisor)
 			m.initLists(msg.Width, msg.Height)
 			m.loaded = true
 		}
@@ -155,23 +156,23 @@ func (m Model) View() string {
 		case typedef.InProgress:
 			return lipgloss.JoinHorizontal(
 				lipgloss.Left,
-				columnStyle.Render(todoView),
-				focusedStyle.Render(inProgView),
-				columnStyle.Render(doneView),
+				styling.ColumnStyle.Render(todoView),
+				styling.FocusedStyle.Render(inProgView),
+				styling.ColumnStyle.Render(doneView),
 			)
 		case typedef.Done:
 			return lipgloss.JoinHorizontal(
 				lipgloss.Left,
-				columnStyle.Render(todoView),
-				columnStyle.Render(inProgView),
-				focusedStyle.Render(doneView),
+				styling.ColumnStyle.Render(todoView),
+				styling.ColumnStyle.Render(inProgView),
+				styling.FocusedStyle.Render(doneView),
 			)
 		default:
 			return lipgloss.JoinHorizontal(
 				lipgloss.Left,
-				focusedStyle.Render(todoView),
-				columnStyle.Render(inProgView),
-				columnStyle.Render(doneView),
+				styling.FocusedStyle.Render(todoView),
+				styling.ColumnStyle.Render(inProgView),
+				styling.ColumnStyle.Render(doneView),
 			)
 		}
 	} else {
