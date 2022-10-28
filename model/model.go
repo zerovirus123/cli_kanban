@@ -126,7 +126,7 @@ func (m ModelHandler) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			index := m.Lists[m.Focused].Index()
 			m.Lists[m.Focused].RemoveItem(index)
 		}
-	case task.Task:
+	case *task.Task:
 		task := msg
 		return m, m.Lists[task.Status()].InsertItem(len(m.Lists[task.Status()].Items()), task)
 	}
